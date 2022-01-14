@@ -23,11 +23,13 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 option(
   VELOX_BUILD_TESTING
   "Enable Velox tests. This will enable all other build options automatically."
-  ON)
+  ON
+)
 option(
   VELOX_BUILD_MINIMAL
   "Build a minimal set of components only. This will override other build options."
-  OFF)
+  OFF
+)
 
 option(VELOX_ENABLE_DUCKDB "Build duckDB to enable differential testing." ON)
 option(VELOX_ENABLE_EXEC "Build exec." ON)
@@ -37,9 +39,11 @@ option(VELOX_ENABLE_PRESTO_FUNCTIONS "Build Presto SQL functions." ON)
 option(VELOX_ENABLE_SPARK_FUNCTIONS "Build Spark SQL functions." ON)
 option(VELOX_ENABLE_EXPRESSION "Build expression." ON)
 option(VELOX_ENABLE_PARSE "Build parser used for unit tests." ON)
-option(VELOX_ENABLE_EXAMPLES
-       "Build examples. This will enable VELOX_ENABLE_EXPRESSION automatically."
-       ON)
+option(
+  VELOX_ENABLE_EXAMPLES
+  "Build examples. This will enable VELOX_ENABLE_EXPRESSION automatically."
+  ON
+)
 option(VELOX_ENABLE_S3 "Build S3 Connector" OFF)
 option(VELOX_ENABLE_PARQUET "Enable Parquet support" OFF)
 option(VELOX_BUILD_TEST_UTILS "Enable Velox test utilities" OFF)
@@ -91,8 +95,10 @@ endif()
 
 # If CODEGEN support isn't explicitly set, we guestimate the value based on the
 # compiler
-if((NOT DEFINED VELOX_CODEGEN_SUPPORT) AND (CMAKE_CXX_COMPILER_ID MATCHES
-                                            "Clang"))
+if(
+  (NOT DEFINED VELOX_CODEGEN_SUPPORT) AND (CMAKE_CXX_COMPILER_ID MATCHES
+  "Clang")
+)
   message(STATUS "Enabling Codegen")
   set(VELOX_CODEGEN_SUPPORT True)
 else()
@@ -122,8 +128,9 @@ set(POSITION_INDEPENDENT_CODE True)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -mavx2 -mfma -mavx -mf16c -mbmi2 -march=native -D USE_VELOX_COMMON_BASE"
+set(
+  CMAKE_CXX_FLAGS
+  "${CMAKE_CXX_FLAGS} -mavx2 -mfma -mavx -mf16c -mbmi2 -march=native -D USE_VELOX_COMMON_BASE"
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D HAS_UNCAUGHT_EXCEPTIONS")
@@ -131,15 +138,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D HAS_UNCAUGHT_EXCEPTIONS")
 # Under Ninja, we are able to designate certain targets large enough to require
 # restricted parallelism.
 if("${MAX_HIGH_MEM_JOBS}")
-  set_property(GLOBAL PROPERTY JOB_POOLS
-                               "high_memory_pool=${MAX_HIGH_MEM_JOBS}")
+  set_property(
+    GLOBAL PROPERTY JOB_POOLS
+    "high_memory_pool=${MAX_HIGH_MEM_JOBS}"
+  )
 else()
   set_property(GLOBAL PROPERTY JOB_POOLS high_memory_pool=1000)
 endif()
 
 if("${MAX_LINK_JOBS}")
-  set_property(GLOBAL APPEND PROPERTY JOB_POOLS
-                                      "link_job_pool=${MAX_LINK_JOBS}")
+  set_property(
+    GLOBAL APPEND PROPERTY JOB_POOLS
+    "link_job_pool=${MAX_LINK_JOBS}"
+  )
   set(CMAKE_JOB_POOL_LINK link_job_pool)
 endif()
 
@@ -149,11 +160,14 @@ endif()
 
 if("${ENABLE_ALL_WARNINGS}")
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(KNOWN_COMPILER_SPECIFIC_WARNINGS
-        "-Wno-range-loop-analysis -Wno-mismatched-tags")
+    set(
+      KNOWN_COMPILER_SPECIFIC_WARNINGS
+      "-Wno-range-loop-analysis -Wno-mismatched-tags"
+    )
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(KNOWN_COMPILER_SPECIFIC_WARNINGS
-        "-Wno-implicit-fallthrough \
+    set(
+      KNOWN_COMPILER_SPECIFIC_WARNINGS
+      "-Wno-implicit-fallthrough \
          -Wno-empty-body \
          -Wno-class-memaccess \
          -Wno-comment \
@@ -164,15 +178,18 @@ if("${ENABLE_ALL_WARNINGS}")
          -Wno-unused-result \
          -Wno-format-overflow \
          -Wno-strict-aliasing \
-         -Wno-type-limits")
+         -Wno-type-limits"
+    )
   endif()
 
-  set(KNOWN_WARNINGS
-      "-Wno-unused \
+  set(
+    KNOWN_WARNINGS
+    "-Wno-unused \
        -Wno-unused-parameter \
        -Wno-sign-compare \
        -Wno-ignored-qualifiers \
-       ${KNOWN_COMPILER_SPECIFIC_WARNINGS}")
+       ${KNOWN_COMPILER_SPECIFIC_WARNINGS}"
+  )
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra ${KNOWN_WARNINGS}")
 endif()
@@ -191,7 +208,8 @@ find_package(
   thread
   system
   date_time
-  atomic)
+  atomic
+)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Range-v3 will be enable when the codegen code actually lands keeping it here
@@ -213,7 +231,8 @@ find_library(DOUBLE_CONVERSION double-conversion)
 
 find_library(LZ4 lz4)
 find_library(LZO lzo2)
-find_library(RE2 re2 REQUIRED)
+#find_library(RE2 re2 REQUIRED)
+find_package(re2 REQUIRED)
 find_library(ZSTD zstd)
 find_package(ZLIB)
 find_library(SNAPPY snappy)
@@ -226,9 +245,11 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 endif()
 
 find_package(folly CONFIG REQUIRED)
-set(FOLLY_WITH_DEPENDENCIES
-    ${FOLLY_LIBRARIES} ${Boost_LIBRARIES} ${DOUBLE_CONVERSION_LIBRARIES}
-    ${EVENT} ${SNAPPY} ${CMAKE_DL_LIBS})
+set(
+  FOLLY_WITH_DEPENDENCIES
+  ${FOLLY_LIBRARIES} ${Boost_LIBRARIES} ${DOUBLE_CONVERSION_LIBRARIES}
+  ${EVENT} ${SNAPPY} ${CMAKE_DL_LIBS}
+)
 
 set(FOLLY ${FOLLY_LIBRARIES})
 set(FOLLY_BENCHMARK Folly::follybenchmark)
@@ -248,8 +269,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 
   # Ensure we have gcc at least 8+.
   if(CMAKE_CXX_COMPILER_VERSION LESS 8.0)
-    message(
-      FATAL_ERROR "VELOX requires gcc > 8. Found ${CMAKE_CXX_COMPILER_VERSION}")
+    message(FATAL_ERROR "VELOX requires gcc > 8. Found ${CMAKE_CXX_COMPILER_VERSION}")
   endif()
 else()
   set(FILESYSTEM "")
@@ -258,7 +278,7 @@ endif()
 if(VELOX_BUILD_TESTING AND NOT VELOX_ENABLE_DUCKDB)
   message(
     FATAL_ERROR
-      "Unit tests require duckDB to be enabled (VELOX_ENABLE_DUCKDB=ON or VELOX_BUILD_TESTING=OFF)"
+    "Unit tests require duckDB to be enabled (VELOX_ENABLE_DUCKDB=ON or VELOX_BUILD_TESTING=OFF)"
   )
 endif()
 
