@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 cmake_minimum_required(VERSION 3.10)
+cmake_policy(SET CMP0074 OLD)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
 # set the project name
@@ -100,7 +101,7 @@ if(
   "Clang")
 )
   message(STATUS "Enabling Codegen")
-  set(VELOX_CODEGEN_SUPPORT True)
+  set(VELOX_CODEGEN_SUPPORT False)
 else()
   message(STATUS "Disabling Codegen")
   set(VELOX_CODEGEN_SUPPORT False)

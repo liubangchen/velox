@@ -1,0 +1,11 @@
+* repo
+
+#+BEGIN_SRC shell
+  git remote add origin-push https://github.com/liubangchen/velox.git
+  git remote add origin-pull https://github.com/facebookincubator/velox.git
+
+  #更新社区仓库
+  git fetch origin-pull
+  #合并
+  git merge origin-pull/trunk
+#+END_SRC
